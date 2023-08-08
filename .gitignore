@@ -1,0 +1,116 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# C extensions
+*.so
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+bin/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# Miscellaneous
+*.bak
+*.swp
+*.cache
+*.DS_Store
+*.pyc
+*.pyo
+*.pyd
+*.pyz
+*.pyw
+*.pyc
+
+# Editor-specific
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+*.komodoide
+*.kate-swp
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Compiled Python files
+*.pyc
+*.pyo
+
+# PyInstaller
+dist/
+build/
+
+# macOS metadata
+.DS_Store
+
+# Windows thumbnail cache files
+Thumbs.db
+
+# Python coverage data
+.coverage
+.coverage.*
+htmlcov/
+
+# Python profiling information
+.prof
+
+# Environment variable file
+.env
+
+# Log files
+*.log
+
+# Dependency directories
+node_modules/
+bower_components/
+
+
+
+# data
+data/kb/
+data/sft/
+
+# baichuan
+*.jsonl
+luwen_baichuan/models/
+luwen_baichuan/output/
+luwen_baichuan/resources/
+luwen_baichuan/scripts/
+luwen_baichuan/logs/
+luwen_baichuan/exp_log/
+*.txt
+
+# luwen_llama
+luwen_llama/data/
+luwen_llama/docs/
+luwen_llama/examples/
+luwen_llama/lora/
+luwen_llama/mymodel/
+luwen_llama/pics/
+luwen_llama/scripts/langchain_demo/
+
+# app
+app/langchain_multi_stage/
+
+app/langchain_demo/data/
+app/langchain_demo/model/
+
+# eval
+evaluate/
