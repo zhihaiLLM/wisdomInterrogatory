@@ -1,6 +1,4 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-server_port = 8889
 import json
 import re
 import shutil
@@ -12,6 +10,8 @@ from transformers import StoppingCriteriaList
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, TextIteratorStreamer, StoppingCriteriaList
 from clc.callbacks import Iteratorize, Stream, _SentinelTokenStoppingCriteria, clear_torch_cache
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+server_port = 8889
 device1 = torch.device("cuda:0")  # 使用第一张GPU卡
 device2 = torch.device("cuda:1")  # 使用第二张GPU卡
 # 修改成自己的配置！！！

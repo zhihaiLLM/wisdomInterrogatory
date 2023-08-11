@@ -111,6 +111,11 @@ app/langchain_multi_stage/
 
 app/langchain_demo/data/
 app/langchain_demo/model/
+app/langchain_demo/code/core*
+
 
 # eval
 evaluate/
+
+# temp
+temp/

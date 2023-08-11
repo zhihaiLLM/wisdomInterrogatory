@@ -75,7 +75,7 @@ class ChatGLMService(LLM):
         prompt = self.generate_prompt(input, kb_based, model_name)
         print("prompt:  ",prompt)
         inputs = self.tokenizer(prompt, return_tensors="pt")
-        input_ids = inputs["input_ids"]
+        input_ids = inputs["input_ids"].cuda()
         # input_ids = inputs["input_ids"].to('cuda:0')
 
         generation_config = GenerationConfig(
