@@ -86,6 +86,7 @@ bower_components/
 # data
 data/kb/
 data/sft/
+data/*
 
 # baichuan
 *.jsonl
@@ -113,9 +114,9 @@ luwen_llama/scripts/langchain_demo/
 # app
 app/langchain_multi_stage/
 app/langchain_demo/code_backup
-app/langchain_demo/data/
+app/langchain_demo/data/*
 app/langchain_demo/code_new/
-app/langchain_demo/model/
+app/langchain_demo/model/*
 app/README.md
 app/langchain_demo/code/core*
 

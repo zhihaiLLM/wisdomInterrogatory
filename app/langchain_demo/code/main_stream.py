@@ -11,7 +11,7 @@ from langchain.schema import Document
 # os.chdir("../../../")
 
 class LangChainCFG:
-    llm_model_name = 'luwen_baichuan/output/zju_model_0818_110k'  # 本地模型文件 or huggingface远程仓库
+    llm_model_name = 'luwen_baichuan/output/zju_model_0813_100k'  # 本地模型文件 or huggingface远程仓库
     embedding_model_name = 'app/langchain_demo/model/text2vec'  # 检索模型文件 or huggingface远程仓库
     vector_store_path = 'app/langchain_demo/data/cache/legal_articles'
     kg_vector_stores = {
