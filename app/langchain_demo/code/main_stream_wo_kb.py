@@ -4,7 +4,6 @@ import re
 import torch
 import gradio as gr
 import sys
-sys.path.append("/root/data1/luwen/app/langchain_demo/code")
 from clc.langchain_application import LangChainApplication
 from transformers import StoppingCriteriaList, StoppingCriteriaList
 from clc.callbacks import Iteratorize, Stream
@@ -60,6 +59,7 @@ def predict(input,
     if len(input) > max_memory:
         input = input[-max_memory:]
 
+    kb_based = False
     print("histroy in call: ", history)
     prompt = application.llm_service.generate_prompt(input, kb_based, large_language_model)
     print("prompt: ",prompt)
@@ -115,8 +115,9 @@ with gr.Blocks() as demo:
                 clear_history = gr.Button("🧹 清除历史对话")
                 send = gr.Button("🚀 发送")
             with gr.Row():
-                gr.Markdown("""<center>powered by 浙江大学 阿里巴巴达摩院 华院计算</center>""")
-
+                gr.Markdown("""<center>Powered by 浙江大学 阿里巴巴达摩院 华院计算 魔搭社区</center>""")
+            with gr.Row():
+                gr.Markdown("""<center>免责声明：本模型仅供学术研究之目的而提供，不保证结果的准确性、完整性或适用性。在使用模型生成的内容时，您应自行判断其适用性，并自担风险。<center>""")
         send.click(predict,
                    inputs=[
                     message,

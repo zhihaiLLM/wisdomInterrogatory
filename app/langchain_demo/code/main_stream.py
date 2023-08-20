@@ -50,6 +50,11 @@ def predict(input,
 
     if intention_reg==["意图识别"]:
         auto_kg_names = key_words_match_intention(input)
+        if len(auto_kg_names)==0:
+            search_text += "意图识别没有匹配到知识库。\n\n"
+        else:
+            match_kg_names = "、".join(list(auto_kg_names))
+            search_text += "意图识别匹配到知识库是："+match_kg_names+"。\n\n"
         kg_names = list(set(kg_names) | auto_kg_names)
 
     kb_based = True if len(kg_names) != 0 else False
@@ -128,7 +133,7 @@ def predict(input,
 with gr.Blocks() as demo: 
     state = gr.State()
     with gr.Row():
-        with gr.Column(scale=1):
+        with gr.Column(scale=1.5):
             github_banner_path = 'https://raw.githubusercontent.com/LIANG-star177/chatgptapi/master/logo.png'
             gr.HTML(f'<p align="center"><a href="https://github.com/LIANG-star177/chatgptapi/blob/master/logo.png"><img src={github_banner_path} height="100" width="200"/></a></p>')
             with gr.Row():       
@@ -145,8 +150,9 @@ with gr.Blocks() as demo:
                 search = gr.Textbox(label='知识库检索结果')
 
             with gr.Row():
-                gr.Markdown("""powered by 浙江大学 阿里巴巴达摩院 华院计算""")
-
+                gr.Markdown("""Powered by 浙江大学 阿里巴巴达摩院 华院计算 魔搭社区""")
+            with gr.Row():
+                gr.Markdown("""免责声明：本模型仅供学术研究之目的而提供，不保证结果的准确性、完整性或适用性。在使用模型生成的内容时，您应自行判断其适用性，并自担风险。""")
         with gr.Column(scale=4):
             with gr.Row():
                 chatbot = gr.Chatbot(label='智海-录问').style(height=500)            
