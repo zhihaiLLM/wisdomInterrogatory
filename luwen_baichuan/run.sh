@@ -11,9 +11,10 @@ DISTRIBUTED_ARGS="--nproc_per_node ${NPROC_PER_NODE} \
                   --master_port ${MASTER_PORT}"
 
 NCCL_DEBUG=INFO torchrun $DISTRIBUTED_ARGS run_clm.py \
-  --model_name_or_path models/zju-7B \
-  --deepspeed ds_config/zero2-new.json \
-  --train_file "resources/zju-10k.jsonl" \
+  --model_name_or_path models/baichuan-7b \
+  --deepspeed ds_config/zero2-A100-40G.json \
+  --train_file "data_demo/demo.jsonl" \
+  --output_dir output/baichuan_7b_test \
   --bf16 \
   --gradient_checkpointing 1 \
   --per_device_train_batch_size 1 \
@@ -28,6 +29,5 @@ NCCL_DEBUG=INFO torchrun $DISTRIBUTED_ARGS run_clm.py \
   --do_train \
   --overwrite_output_dir \
   --max_seq_length 4096 \
-  --output_dir output/zju_model_test \
   --dataloader_num_workers 24 \
   --preprocessing_num_workers 10

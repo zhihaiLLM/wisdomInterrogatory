@@ -6,9 +6,6 @@ from threading import Thread
 import torch
 import transformers
 
-# import modules.shared as shared
-
-
 class _SentinelTokenStoppingCriteria(transformers.StoppingCriteria):
 
     def __init__(self, sentinel_token_ids: list, starting_idx: int):

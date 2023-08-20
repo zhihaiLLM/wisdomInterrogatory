@@ -1,15 +1,5 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 _*-
-"""
-@author:quincy qiang
-@license: Apache Licence
-@file: generate.py
-@time: 2023/04/17
-@contact: yanqiangmiffy@gamil.com
-@software: PyCharm
-@description: coding..
-"""
-
 import os
 from typing import Dict, Union, Optional
 from typing import List
@@ -42,18 +32,7 @@ class ChatGLMService(LLM):
               kb_based: bool = False,
               model_name: Optional[List[str]] = None,
               stop: Optional[List[str]] = None) -> str:
-        # response, _ = self.model.chat(
-        #     self.tokenizer,
-        #     prompt,
-        #     history=self.history,
-        #     max_length=self.max_token,
-        #     temperature=self.temperature,
-        # )
-        # if stop is not None:
-        #     response = enforce_stop_tokens(response, stop)
-        # self.history = self.history + [[None, response]]
-        # print("history",self.history)
-        # self.history = history
+
         self.max_memory = 4096 - int(self.max_token or 0)
         now_input = input
         if not kb_based:
@@ -108,7 +87,7 @@ class ChatGLMService(LLM):
     def generate_prompt(self,instruction,kb_based,model_name):
         if model_name=="zju-bc":
             if not kb_based:
-                return f"""</s>Human:\n{instruction}\n\n</s>Assistant:"""
+                return f'</s>Human:{instruction} </s>Assistant: '
             else:
                 return f"""{instruction}\n\n</s>Assistant:"""
         if model_name=="zju-lm":
@@ -118,15 +97,8 @@ class ChatGLMService(LLM):
             else:
                 return f"""{instruction}\n\n### Response:"""            
 
-    #     return f"""Below is an instruction that describes a task. Write a response that appropriately completes the request.
-    
-    # ### Instruction:
-    # {instruction}
-
-    # ### Response: """
-
     def load_model(self,
-                   model_name_or_path: str = "THUDM/chatglm-6b",device=None):
+                   model_name_or_path: str = "THUDM/chatglm-6b"):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, trust_remote_code=True)
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path, 
@@ -136,20 +108,8 @@ class ChatGLMService(LLM):
             device_map='auto',
             trust_remote_code=True,
             ).half().cuda()
+        # self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path, device_map="auto", trust_remote_code=True)
         self.model = self.model.eval()
-
-    def load_model2(self,
-                   model_name_or_path: str = "THUDM/chatglm-6b",device=None):
-        tokenizer2 = LlamaTokenizer.from_pretrained(model_name_or_path)
-        model2 = LlamaForCausalLM.from_pretrained(
-            model_name_or_path, 
-            load_in_8bit=False,
-            torch_dtype=torch.float16,
-            low_cpu_mem_usage=True,
-            device_map='auto',
-            ).half().cuda()
-        model2 = model2.eval()
-        return tokenizer2, model2
 
     def auto_configure_device_map(self, num_gpus: int) -> Dict[str, int]:
         # transformer.word_embeddings 占用1层
@@ -210,8 +170,3 @@ class ChatGLMService(LLM):
                 trust_remote_code=True
             )
             print(f"loading model successfully, you should use checkpoint_path={multi_gpu_model_cache_dir} next time")
-
-# if __name__ == '__main__':
-#     config=LangChainCFG()
-#     chatLLM = ChatGLMService()
-#     chatLLM.load_model(model_name_or_path=config.llm_model_name)

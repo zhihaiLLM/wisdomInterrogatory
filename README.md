@@ -100,7 +100,7 @@
 
 ### 知识库构建
 ![Alt text](pics/知识库构建.png)
-我们目前一共收集了5种类型的知识库，包括法条类、案例类、模板类、书籍类以及法律考试类。
+我们目前一共收集了6种类型的知识库，包括法条类、案例类、模板类、书籍类、法律考试类、法律日常问答类。
 1. **知识库收集与处理**
 - 法条库
     + 法条库中包含了宪法、法律（宪法相关法、民商法、刑法、经济法、行政法、社会法、诉讼与非诉讼程序法）、司法解释、地方性法规（浙江、河南、北京、广东、重庆、山东、上海）、监察法规和行政法规。
@@ -117,6 +117,9 @@
 - 法考题库
     + 法考题库包含了2016年到2020年的1200题考题、选项、解析和答案。
     + 处理：一个json文件，key是问题，value是问题、选项、解析和答案。
+- 法律日常问答库
+    + 法律问答库包含了几千条法律领域的常见问题和答案数据。
+    + 处理：一个json文件，key是问题，value是答案。
    
 2. **知识库存储**
 
@@ -138,14 +141,155 @@
 
 知识检索在意图识别阶段可能涉及多个知识库类型，我们将检索到的不同来源的知识融合后输入给法律大模型。比如询问一个案例如何判罚时，意图识别阶段识别出应在法条库和类案库做检索，我们把和知识库名和其下检索到的知识拼接，再和问题拼接，共同输入到模型生成答案：
 - 可参考的知识：法条：知识1，知识2 类案：知识1，知识2 问题：XXX，请问这个案例应该如何判罚？
-<!-- ## 模型评测 -->
+
+## 模型评测
+由于大模型是生成模型，比较难通过脚本定量评测，为了初步评估目前录问的能力，我们在四个任务上进行了人工评测，包括：
+1. 案件要素抽取
+
+2. 法律文本摘要
+
+3. 法律法规问答
+
+4. 司法决策推理
+
+## 使用说明
+1. **训练**
+
+#### 训练环境安装
+```shell
+transformers>=4.27.1
+datasets
+evaluate
+accelerate>=0.20.1
+deepspeed
+sentencepiece
+deepspeed>=0.8.3
+pytest-rerunfailures>=11.1.2
+tensorboard
+```
+
+#### 配置DeepSpeed
+
+本示范代码采用 DeepSpeed 框架进行训练。用户需根据集群情况，修改 `ds_config/`内配置文件，如果是多机多卡，需要修改 ssh 中各个节点的 IP 配置。具体可以参见 DeepSpeed [官方说明](https://www.deepspeed.ai/) 。
+
+
+#### 训练代码：全量参数微调
+
+部分参数解释：
+
+`model_name_or_path` : 源模型路径。如：`models/baichuan-7b`
+
+`deepspeed` : deepspeed配置文件路径。如：
+`ds_config/zero2-A100-40G.json`
+
+`train_file` : SFT训练数据文件路径。如：
+`data_demo/demo.jsonl`
+
+`output_dir` : 模型保存路径。如：
+`output/baichuan_7b_test`
+
+
+```shell
+export NPROC_PER_NODE=6 # Num of GPU
+export MASTER_ADDR=127.0.0.1
+export MASTER_PORT=9527
+export WORLD_SIZE=1
+export RANK=0
+
+DISTRIBUTED_ARGS="--nproc_per_node ${NPROC_PER_NODE} \
+                  --nnodes ${WORLD_SIZE} \
+                  --node_rank ${RANK} \
+                  --master_addr ${MASTER_ADDR} \
+                  --master_port ${MASTER_PORT}"
+
+NCCL_DEBUG=INFO torchrun $DISTRIBUTED_ARGS run_clm.py \
+  --model_name_or_path models/baichuan-7b \ # path to source model
+  --deepspeed ds_config/zero2-A100-40G.json \  # path to deepspeed config file
+  --train_file "data_demo/demo.jsonl" \ # path to sft data file
+  --output_dir output/baichuan_7b_test \ # path to saved model 
+  --bf16 \ 
+  --gradient_checkpointing 1 \
+  --per_device_train_batch_size 1 \
+  --per_device_eval_batch_size 1 \
+  --gradient_accumulation_steps 5 \
+  --num_train_epochs 3 \
+  --learning_rate 1e-5 \
+  --logging_steps 10 \
+  --save_strategy "epoch" \
+  --warmup_ratio 0.1 \
+  --weight_decay 0.1 \
+  --do_train \
+  --do_eval \
+  --overwrite_output_dir \
+  --max_seq_length 4096 \
+  --dataloader_num_workers 24 \
+  --preprocessing_num_workers 10
+```
+
+#### Tensorboard
+
+<html>
+    <table style="margin-left: auto; margin-right: auto;">
+        <tr>
+            <td>
+    <img src="pics/train-loss.png" width="400"/>
+            </td>
+            <td>
+    <img src="pics/eval-loss.png" width="400"/>
+            </td>
+        </tr>
+    </table>
+</html>
+
+```shell
+tensorboard --logdir=luwen_baichuan/output/baichuan_7b_test/runs
+```
+
+
+2. **推理**
+
+#### 推理环境安装
+```shell
+transformers>=4.27.1
+accelerate>=0.20.1
+torch>=2.0.1
+sentencepiece
+```
+
+#### 推理代码调用
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import os
+import torch
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+model_path = "path_to_model"
+
+def generate_response(prompt):
+    torch.cuda.empty_cache()
+    inputs = tokenizer(f'</s>Human:{prompt} </s>Assistant: ', return_tensors='pt')
+    inputs = inputs.to('cuda')
+    with torch.no_grad():
+        pred = model.generate(**inputs, max_new_tokens=800, repetition_penalty=1.2)
+    response = tokenizer.decode(pred.cpu()[0], skip_special_tokens=True)
+    return response.split("Assistant: ")[1]
+
+tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto", trust_remote_code=True).half()
+prompt = "如果喝了两斤白酒后开车，会有什么后果？"
+resp = generate_response(prompt)
+print(resp)
+```
+
+3. **界面**
+
 
 
 ## 未来方向
 
 1. **评测矩阵**
 为了更好的评估大模型的能力，我们设计了一个评测矩阵，从**司法能力**、**通用能力**以及**安全能力**三个角度展开评测，目前数据仍在收集构造中。
-![Alt text](pics/评测矩阵.png)
+![Alt text](pics/评测矩阵2.jpg)
 
 2. **多模态能力**
 尽管大多数法律数据都以文本形式出现，但法律场景中，仍有许多其他形式的数据，如录音、图片、视频等，因此多模态的能力也很重要，下图是一个多模态应用场景的例子。

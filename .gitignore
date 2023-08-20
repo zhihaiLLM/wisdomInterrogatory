@@ -95,9 +95,13 @@ luwen_baichuan/resources/
 luwen_baichuan/scripts/
 luwen_baichuan/logs/
 luwen_baichuan/exp_log/
+luwen_baichuan/run_multi.sh
+luwen_baichuan/gradio_demo.py
+luwen_baichuan/README.md
 *.txt
 
 # luwen_llama
+luwen_llama/
 luwen_llama/data/
 luwen_llama/docs/
 luwen_llama/examples/
@@ -108,11 +112,14 @@ luwen_llama/scripts/langchain_demo/
 
 # app
 app/langchain_multi_stage/
-
+app/langchain_demo/code_backup
 app/langchain_demo/data/
+app/langchain_demo/code_new/
 app/langchain_demo/model/
+app/README.md
 app/langchain_demo/code/core*
 
+release_infer/
 
 # eval
 evaluate/

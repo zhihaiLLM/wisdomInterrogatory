@@ -3,12 +3,13 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 import re
 import torch
 import gradio as gr
+import sys
+sys.path.append("/root/data1/luwen/app/langchain_demo/code")
 from clc.langchain_application import LangChainApplication, torch_gc
 from transformers import StoppingCriteriaList, StoppingCriteriaList
 from clc.callbacks import Iteratorize, Stream
 from clc.matching import key_words_match_intention, key_words_match_knowledge
 from langchain.schema import Document
-# os.chdir("../../../")
 
 class LangChainCFG:
     llm_model_name = 'luwen_baichuan/output/zju_model_0818_110k'  # 本地模型文件 or huggingface远程仓库
@@ -52,7 +53,7 @@ def predict(input,
         auto_kg_names = key_words_match_intention(input)
         kg_names = list(set(kg_names) | auto_kg_names)
 
-    kb_based = True if len(kg_names) != 0 else False
+    kb_based = True if kg_names else False
 
     if len(history) != 0:
         if large_language_model=="zju-bc":
@@ -121,31 +122,28 @@ def predict(input,
             else:
                 output = output.split("### Response:")[-1].strip()
             history[-1] = (now_input, output)
-            yield "", history, history, search_text
+            yield "", history, history
             if last in eos_token_ids or re.search(pattern, origin_output) or re.search(pattern2, origin_output):
                 break
 
 with gr.Blocks() as demo: 
     state = gr.State()
-    with gr.Row():
-        with gr.Column(scale=1):
-            github_banner_path = 'https://raw.githubusercontent.com/LIANG-star177/chatgptapi/master/logo.png'
-            gr.HTML(f'<p align="center"><a href="https://github.com/LIANG-star177/chatgptapi/blob/master/logo.png"><img src={github_banner_path} height="100" width="200"/></a></p>')
-            with gr.Row():       
-                intention_reg = gr.CheckboxGroup(["意图识别"],
-                        label="自动选择知识库",
-                        value=None,
-                        interactive=True)
-            with gr.Row():
-                kg_names = gr.CheckboxGroup(list(config.kg_vector_stores.keys()),
-                                label="手动选择知识库",
-                                value=None,
-                                interactive=True).style(height=200)
-            with gr.Row():
-                search = gr.Textbox(label='知识库检索结果')
-
-            with gr.Row():
-                gr.Markdown("""powered by 浙江大学 阿里巴巴达摩院 华院计算""")
+    # with gr.Row():
+    with gr.Column(scale=1):
+        github_banner_path = 'https://raw.githubusercontent.com/LIANG-star177/chatgptapi/master/logo.png'
+        gr.HTML(f'<p align="center"><a href="https://github.com/LIANG-star177/chatgptapi/blob/master/logo.png"><img src={github_banner_path} height="100" width="200"/></a></p>')
+            # with gr.Row():       
+            #     intention_reg = gr.CheckboxGroup(["意图识别"],
+            #             label="自动选择知识库",
+            #             value=None,
+            #             interactive=True)
+            # with gr.Row():
+            #     kg_names = gr.CheckboxGroup(list(config.kg_vector_stores.keys()),
+            #                     label="手动选择知识库",
+            #                     value=None,
+            #                     interactive=True).style(height=200)
+            # with gr.Row():
+            #     search = gr.Textbox(label='知识库检索结果')
 
         with gr.Column(scale=4):
             with gr.Row():
@@ -155,30 +153,28 @@ with gr.Blocks() as demo:
             with gr.Row():
                 clear_history = gr.Button("🧹 清除历史对话")
                 send = gr.Button("🚀 发送")
+            with gr.Row():
+                gr.Markdown("""<center>powered by 浙江大学 阿里巴巴达摩院 华院计算</center>""")
 
         send.click(predict,
                    inputs=[
                     message,
-                    kg_names,
                     state,
-                    intention_reg,
                    ],
-                   outputs=[message, chatbot, state, search],
+                   outputs=[message, chatbot, state],
                    show_progress=True)
 
         clear_history.click(fn=clear_session,
                             inputs=[],
-                            outputs=[chatbot, state, search],
+                            outputs=[chatbot, state],
                             queue=False)
 
         message.submit(predict,
                        inputs=[
                         message,
-                        kg_names,
                         state,
-                        intention_reg,
                        ],
-                       outputs=[message, chatbot, state, search],
+                       outputs=[message, chatbot, state],
                        show_progress=True)
 
 demo.queue(concurrency_count=2).launch(
