@@ -42,11 +42,14 @@ class LangChainApplication(object):
         for i,kg_name in enumerate(kg_names):
             context_one = []
             for j,doc in enumerate(related_docs[i]):
-                context_one += ["[{}] ".format(j+1) + doc[0].metadata["value"]]
-            context = "\n".join(context_one)
-            if context:
+                if doc[1] < 500:
+                    context_one += ["[{}] ".format(j+1) + doc[0].metadata["value"]]
+            if len(context_one)>0:
+                context = "\n".join(context_one)
                 context = "可供参考的"+kg_name + ":" + context + "\n"
-                context_all += context
+            else:
+                context = kg_name+ "中未找到相关知识"+ "\n"
+            context_all += context
         context_with_score = context_all
         prompt = prompt_template.replace("{question}", query).replace("{context}", context_all)
         return prompt, context_with_score

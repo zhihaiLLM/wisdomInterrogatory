@@ -161,14 +161,14 @@
 #### 训练环境安装
 ```shell
 transformers>=4.27.1
-datasets
-evaluate
+datasets==2.13.0
+evaluate==0.4.0
 accelerate>=0.20.1
-deepspeed
-sentencepiece
+deepspeed==0.9.5
+sentencepiece==0.1.99
 deepspeed>=0.8.3
 pytest-rerunfailures>=11.1.2
-tensorboard
+tensorboard==2.13.0
 ```
 
 #### 配置DeepSpeed
@@ -256,7 +256,7 @@ tensorboard --logdir=luwen_baichuan/output/baichuan_7b_test/runs
 transformers>=4.27.1
 accelerate>=0.20.1
 torch>=2.0.1
-sentencepiece
+sentencepiece==0.1.99
 ```
 
 #### 推理代码调用
@@ -283,6 +283,7 @@ prompt = "如果喝了两斤白酒后开车，会有什么后果？"
 resp = generate_response(prompt)
 print(resp)
 ```
+
 
 3. **界面**
 ![Alt text](pics/界面.png)

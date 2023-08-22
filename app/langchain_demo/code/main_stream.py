@@ -8,7 +8,7 @@ from transformers import StoppingCriteriaList, StoppingCriteriaList
 from clc.callbacks import Iteratorize, Stream
 from clc.matching import key_words_match_intention, key_words_match_knowledge
 from langchain.schema import Document
-# os.chdir("../../../")
+os.chdir("../../../")
 
 class LangChainCFG:
     llm_model_name = 'luwen_baichuan/output/zju_model_0813_100k'  # 本地模型文件 or huggingface远程仓库
