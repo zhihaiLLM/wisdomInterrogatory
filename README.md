@@ -301,7 +301,7 @@ print(resp)
 
 模型参数在以下百度网盘中：
 
-链接：:https://pan.baidu.com/s/1ue9nVhrRThpbPPyS7q72dw  密码:53vy
+链接:https://pan.baidu.com/s/1ue9nVhrRThpbPPyS7q72dw  密码:53vy
 
 将压缩包解压后，放于luwen_baichuan/output/目录下，即可使用，注意文件夹名字要与infer代码中的model_path一致。
 
