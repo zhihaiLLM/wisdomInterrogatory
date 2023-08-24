@@ -5,6 +5,8 @@
 ## 项目背景
 智海-录问(wisdomInterrogatory)是由浙江大学、阿里巴巴达摩院以及华院计算三家单位共同设计研发的法律大模型。核心思想：以“普法共享和司法效能提升”为目标，从推动法律智能化体系入司法实践、数字化案例建设、虚拟法律咨询服务赋能等方面提供支持，形成数字化和智能化的司法基座能力。
 
+目前已开放[Modelscope在线试用](https://modelscope.cn/studios/wisdomOcean/wisdomInterrogatory/summary) 
+
 下面主要介绍模型训练与模型增强。
 
 ## 模型训练
@@ -294,11 +296,14 @@ print(resp)
 
 ## 模型参数下载
 
-模型参数在以下百度网盘中：（我们会尽快上传）
+模型参数在以下百度网盘中：
+
+链接：:https://pan.baidu.com/s/1ue9nVhrRThpbPPyS7q72dw  密码:53vy
 
 将压缩包解压后，放于luwen_baichuan/output/目录下，即可使用，注意文件夹名字要与infer代码中的model_path一致。
 
 知识库数据在以下百度网盘中：
+
 链接:https://pan.baidu.com/s/16lwM2rPnSq9u-UbtWbZgig  密码:anuo
 
 将压缩包解压后，放于app目录下，即可使用。
