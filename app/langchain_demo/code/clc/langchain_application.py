@@ -32,12 +32,8 @@ class LangChainApplication(object):
             self.source_service.init_source_vector()
 
     def generate_prompt(self, related_docs,
-                        query: str, model_name: str, kg_names: List[str]) -> str:
-        if model_name=="zju-bc":
-            prompt_template = ("</s>Human:\n{question}\n{context}")
-        else:
-            prompt_template = ("Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n"
-            "### Instruction:\n{question}\n{context}")
+                        query: str, kg_names: List[str]) -> str:
+        prompt_template = ("</s>Human:\n{question}\n{context}")
         context_all = ""
         for i,kg_name in enumerate(kg_names):
             context_one = []

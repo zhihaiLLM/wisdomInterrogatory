@@ -82,20 +82,13 @@ class ChatGLMService(LLM):
         print("output:", output)
         print("====================")
         self.history = self.history + [[now_input, output]]
-
         return output
-    def generate_prompt(self,instruction,kb_based,model_name):
-        if model_name=="zju-bc":
-            if not kb_based:
-                return f'</s>Human:{instruction} </s>Assistant: '
-            else:
-                return f"""{instruction}\n\n</s>Assistant:"""
-        if model_name=="zju-lm":
-            if not kb_based:
-                return f"""Below is an instruction that describes a task. Write a response that appropriately completes the request.
-                    ### Instruction:\n{instruction}\n\n### Response:"""
-            else:
-                return f"""{instruction}\n\n### Response:"""            
+    
+    def generate_prompt(self,instruction,kb_based):
+        if not kb_based:
+            return f'</s>Human:{instruction} </s>Assistant: '
+        else:
+            return f"""{instruction}\n\n</s>Assistant:"""          
 
     def load_model(self,
                    model_name_or_path: str = "THUDM/chatglm-6b"):

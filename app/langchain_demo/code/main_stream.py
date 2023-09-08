@@ -8,7 +8,8 @@ from transformers import StoppingCriteriaList, StoppingCriteriaList
 from clc.callbacks import Iteratorize, Stream
 from clc.matching import key_words_match_intention, key_words_match_knowledge
 from langchain.schema import Document
-os.chdir("../../../")
+# 调试使用
+# os.chdir("../../../")
 
 class LangChainCFG:
     llm_model_name = 'luwen_baichuan/output/zju_model_0813_100k'  # 本地模型文件 or huggingface远程仓库
@@ -34,7 +35,6 @@ def predict(input,
             history=None,
             intention_reg=None,
             **kwargs):
-    large_language_model="zju-bc"
     max_length=1024
     top_k = 1
     application.llm_service.max_token = max_length
@@ -60,14 +60,9 @@ def predict(input,
     kb_based = True if len(kg_names) != 0 else False
 
     if len(history) != 0:
-        if large_language_model=="zju-bc":
-            input = "".join(["</s>Human:\n" + i[0] +"\n" + "</s>Assistant:\n" + i[1] + "\n"for i in application.llm_service.history]) + \
-            "</s>Human:\n" + input
-            input = input[len("</s>Human:\n"):]
-        else:
-            input = "".join(["### Instruction:\n" + i[0] +"\n" + "### Response: " + i[1] + "\n" for i in application.llm_service.history]) + \
-            "### Instruction:\n" + input
-            input = input[len("### Instruction:\n"):]
+        input = "".join(["</s>Human:" + i[0] + " </s>Assistant: " + i[1] for i in application.llm_service.history]) + \
+        "</s>Human:" + input
+        input = input[len("</s>Human:"):]
     if len(input) > max_memory:
         input = input[-max_memory:]
 
@@ -87,12 +82,12 @@ def predict(input,
             related_docs_with_score_seq.append(kg_matches)
         related_docs_with_score = related_docs_with_score_seq
         if len(related_docs_with_score) > 0:
-            input, context_with_score = application.generate_prompt(related_docs_with_score, input, large_language_model,kg_names)
+            input, context_with_score = application.generate_prompt(related_docs_with_score, input,kg_names)
         search_text += context_with_score
     torch_gc()
 
     print("histroy in call: ", history)
-    prompt = application.llm_service.generate_prompt(input, kb_based, large_language_model)
+    prompt = application.llm_service.generate_prompt(input, kb_based)
     print("prompt: ",prompt)
     inputs = application.llm_service.tokenizer(prompt, return_tensors="pt").to('cuda')
     stopping_criteria = StoppingCriteriaList()
@@ -121,10 +116,7 @@ def predict(input,
             pattern = r"\n{5,}$"
             pattern2 = r"\s{5,}$"
             origin_output = output
-            if large_language_model=="zju-bc":
-                output = output.split("Assistant:")[-1].strip()
-            else:
-                output = output.split("### Response:")[-1].strip()
+            output = output.split("Assistant:")[-1].strip()
             history[-1] = (now_input, output)
             yield "", history, history, search_text
             if last in eos_token_ids or re.search(pattern, origin_output) or re.search(pattern2, origin_output):

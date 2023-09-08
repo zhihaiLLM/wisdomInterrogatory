@@ -30,11 +30,8 @@ def clear_session():
     return '', None, ""
 
 def predict(input,
-            kg_names=None,
             history=None,
-            intention_reg=None,
             **kwargs):
-    large_language_model="zju-bc"
     max_length=1024
     top_k = 1
     application.llm_service.max_token = max_length
@@ -47,21 +44,16 @@ def predict(input,
     eos_token_ids = [application.llm_service.tokenizer.eos_token_id]
     application.llm_service.history = history[-5:]
     max_memory = 4096 - max_length
-
+    kb_based = False
     if len(history) != 0:
-        if large_language_model=="zju-bc":
-            input = "".join(["</s>Human:\n" + i[0] +"\n" + "</s>Assistant:\n" + i[1] + "\n"for i in application.llm_service.history]) + \
-            "</s>Human:\n" + input
-            input = input[len("</s>Human:\n"):]
-        else:
-            input = "".join(["### Instruction:\n" + i[0] +"\n" + "### Response: " + i[1] + "\n" for i in application.llm_service.history]) + \
-            "### Instruction:\n" + input
-            input = input[len("### Instruction:\n"):]
+        input = "".join(["</s>Human:" + i[0] + " </s>Assistant: " + i[1] for i in application.llm_service.history]) + \
+        "</s>Human:" + input
+        input = input[len("</s>Human:"):]
     if len(input) > max_memory:
         input = input[-max_memory:]
 
     print("histroy in call: ", history)
-    prompt = application.llm_service.generate_prompt(input, kb_based, large_language_model)
+    prompt = application.llm_service.generate_prompt(input, kb_based)
     print("prompt: ",prompt)
     inputs = application.llm_service.tokenizer(prompt, return_tensors="pt").to('cuda')
     stopping_criteria = StoppingCriteriaList()
@@ -90,10 +82,7 @@ def predict(input,
             pattern = r"\n{5,}$"
             pattern2 = r"\s{5,}$"
             origin_output = output
-            if large_language_model=="zju-bc":
-                output = output.split("Assistant:")[-1].strip()
-            else:
-                output = output.split("### Response:")[-1].strip()
+            output = output.split("Assistant:")[-1].strip()
             history[-1] = (now_input, output)
             yield "", history, history
             if last in eos_token_ids or re.search(pattern, origin_output) or re.search(pattern2, origin_output):
