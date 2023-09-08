@@ -11,7 +11,7 @@ from transformers import AutoModel, AutoTokenizer, LlamaForCausalLM, LlamaTokeni
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, TextIteratorStreamer, StoppingCriteriaList
 
 
-class ChatGLMService(LLM):
+class BaichuanService(LLM):
     max_token: int = 10000
     temperature: float = 0.2
     top_p = 0.9
@@ -25,7 +25,7 @@ class ChatGLMService(LLM):
 
     @property
     def _llm_type(self) -> str:
-        return "ChatGLM"
+        return "Baichuan"
 
     def _call(self,
               input: str,
@@ -84,11 +84,8 @@ class ChatGLMService(LLM):
         self.history = self.history + [[now_input, output]]
         return output
     
-    def generate_prompt(self,instruction,kb_based):
-        if not kb_based:
-            return f'</s>Human:{instruction} </s>Assistant: '
-        else:
-            return f"""{instruction}\n\n</s>Assistant:"""          
+    def generate_prompt(self,instruction):
+        return f'</s>Human:{instruction} </s>Assistant: '        
 
     def load_model(self,
                    model_name_or_path: str = "THUDM/chatglm-6b"):

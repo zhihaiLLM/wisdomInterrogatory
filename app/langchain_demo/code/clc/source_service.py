@@ -17,7 +17,6 @@ class SourceService(object):
         初始化本地知识库向量
         :return:
         """
-        docs = []
         for i in list(self.kg_vector_stores.values()):
             docs = []
             for doc in os.listdir(i):

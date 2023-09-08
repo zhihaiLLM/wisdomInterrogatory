@@ -72,7 +72,7 @@ def predict(input,
             if kg_name=="法律法条":
                 related_article = key_words_match_knowledge(application.all_articles, application.choices, now_input)
                 if related_article:
-                    kg_matches = [[Document(page_content=related_article[0], metadata={"value": related_article[1]})]]
+                    kg_matches = [(Document(page_content=related_article[0], metadata={"value": related_article[1]}),0)]
                 else:
                     application.source_service.load_vector_store(application.config.kg_vector_stores[kg_name])
                     kg_matches = application.source_service.vector_store.similarity_search_with_score(input, k=top_k)
@@ -87,7 +87,7 @@ def predict(input,
     torch_gc()
 
     print("histroy in call: ", history)
-    prompt = application.llm_service.generate_prompt(input, kb_based)
+    prompt = f'</s>Human:{input} </s>Assistant: ' 
     print("prompt: ",prompt)
     inputs = application.llm_service.tokenizer(prompt, return_tensors="pt").to('cuda')
     stopping_criteria = StoppingCriteriaList()

@@ -32,7 +32,7 @@ def init_all_articles():
 
 def key_words_match_knowledge(dic_all, choices, query):
     result_title = process.extract(query, choices, limit=1)
-    match = re.search(r'第(\S+)条', query)
+    match = re.search(r'第([一二三四五六七八九零百十]+)条', query)
     if match:
         result_num = match.group(1)
         key0 = result_title[0][0]+" 第"+ result_num +"条"

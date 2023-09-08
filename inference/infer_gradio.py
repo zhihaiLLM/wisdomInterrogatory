@@ -38,13 +38,12 @@ def predict(input,
     # print(input)
     if history == None:
         history = []
-    search_text = ''
 
     now_input = input
     eos_token_ids = [application.llm_service.tokenizer.eos_token_id]
     application.llm_service.history = history[-5:]
     max_memory = 4096 - max_length
-    kb_based = False
+   
     if len(history) != 0:
         input = "".join(["</s>Human:" + i[0] + " </s>Assistant: " + i[1] for i in application.llm_service.history]) + \
         "</s>Human:" + input
@@ -53,7 +52,7 @@ def predict(input,
         input = input[-max_memory:]
 
     print("histroy in call: ", history)
-    prompt = application.llm_service.generate_prompt(input, kb_based)
+    prompt = f'</s>Human:{input} </s>Assistant: ' 
     print("prompt: ",prompt)
     inputs = application.llm_service.tokenizer(prompt, return_tensors="pt").to('cuda')
     stopping_criteria = StoppingCriteriaList()
