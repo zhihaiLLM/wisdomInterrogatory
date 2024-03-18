@@ -345,6 +345,17 @@ print(resp)
 尽管大多数法律数据都以文本形式出现，但法律场景中，仍有许多其他形式的数据，如录音、图片、视频等，因此多模态的能力也很重要，下图是一个多模态应用场景的例子。
 ![Alt text](pics/多模态.png)
 
+## ToCite
+@software{wisdomInterrogatory,
+  author = {Wu, Yiquan and Liu, Yuhang and Liu, Yifei, and Li, Ang and Zhou, Siying and Kuang, Kun},
+  title = {wisdomInterrogatory},
+  url = {https://github.com/zhihaiLLM/wisdomInterrogatory},
+  version = {1.0},
+  date = {2024-03-18},
+  publisher = {GitHub},
+  note = {Available at GitHub}
+}
+
 ## 免责声明
 
 本模型仅供学术研究之目的而提供，不保证结果的准确性、完整性或适用性。在使用模型生成的内容时，您应自行判断其适用性，并自担风险。
