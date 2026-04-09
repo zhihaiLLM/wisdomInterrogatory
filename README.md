@@ -12,6 +12,8 @@
 
 - 目前已开放[Modelscope在线试用](https://modelscope.cn/studios/wisdomOcean/wisdomInterrogatory/summary) 
 
+- 技术报告可见[Luwen Technical Report](https://arxiv.org/abs/2604.06737)
+
 下面主要介绍模型训练与模型增强。
 
 ## 模型训练
@@ -348,14 +350,14 @@ print(resp)
 ![Alt text](pics/多模态.png)
 
 ## ToCite
-@software{wisdomInterrogatory,
-  author = {Wu, Yiquan and Liu, Yuhang and Liu, Yifei, and Li, Ang and Zhou, Siying and Kuang, Kun},
-  title = {wisdomInterrogatory},
-  url = {https://github.com/zhihaiLLM/wisdomInterrogatory},
-  version = {1.0},
-  date = {2024-03-18},
-  publisher = {GitHub},
-  note = {Available at GitHub}
+@misc{wu2026luwentechnicalreport,
+      title={Luwen Technical Report}, 
+      author={Yiquan Wu and Yuhang Liu and Yifei Liu and Ang Li and Siying Zhou and Kun Kuang},
+      year={2026},
+      eprint={2604.06737},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2604.06737}, 
 }
 
 ## 免责声明
